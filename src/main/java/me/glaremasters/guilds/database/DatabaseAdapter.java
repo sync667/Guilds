@@ -137,9 +137,14 @@ public final class DatabaseAdapter implements AutoCloseable {
         this.backend = backend;
 
         try {
-            // You may wish to create container(s) elsewhere, but this is an OK spot.
-            // In JSON mode, this is equivalent to making the file.
-            // In SQL mode, this is equivalent to creating the table.
+            initalizeBackeck();
+        } catch (Exception ex) {
+            initializeLegacyBackend();
+        }
+    }
+
+    private void initalizeBackeck() throws IOException {
+        try {
             this.guildAdapter = new GuildAdapter(guilds, this);
             this.guildAdapter.createContainer();
 
@@ -152,8 +157,25 @@ public final class DatabaseAdapter implements AutoCloseable {
             this.cooldownAdapter = new CooldownAdapter(guilds, this);
             this.cooldownAdapter.createContainer();
         } catch (Exception ex) {
-            LoggingUtils.severe("There was an issue setting up the backend database. Shutting down to prevent further issues. If you are using MySQL, make sure your database server is on the latest version!");
-            ex.printStackTrace();
+            LoggingUtils.severe("Failed to setup backend normally. Attempting to use legacy methods...");
+        }
+    }
+
+    private void initializeLegacyBackend() throws IOException {
+        try {
+            this.guildAdapter = new GuildAdapter(guilds, this);
+            this.guildAdapter.createContainerFallback();
+
+            this.challengeAdapter = new ChallengeAdapter(guilds, this);
+            this.challengeAdapter.createContainerFallback();
+
+            this.arenaAdapter = new ArenaAdapter(guilds, this);
+            this.arenaAdapter.createContainerFallback();
+
+            this.cooldownAdapter = new CooldownAdapter(guilds, this);
+            this.cooldownAdapter.createContainer();
+        } catch (Exception ex) {
+            LoggingUtils.severe("Failed to setup backend using legacy methods. Shutting down to prevent further issues");
             Bukkit.getServer().getPluginManager().disablePlugin(guilds);
         }
     }

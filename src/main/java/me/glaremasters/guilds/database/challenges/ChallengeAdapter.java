@@ -60,6 +60,10 @@ public class ChallengeAdapter {
         provider.createContainer(sqlTablePrefix);
    }
 
+   public void createContainerFallback() throws IOException {
+       provider.createContainerFallback(sqlTablePrefix);
+   }
+
     public boolean challengeExists(@NotNull String id) throws IOException {
         return provider.challengeExists(sqlTablePrefix, id);
     }

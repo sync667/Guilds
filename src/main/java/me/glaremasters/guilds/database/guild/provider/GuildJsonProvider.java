@@ -51,7 +51,6 @@ import java.util.Objects;
  */
 public class GuildJsonProvider implements GuildProvider {
     private final File dataFolder;
-    private final List<String> ids = new ArrayList<>();
     private Gson gson;
 
     public GuildJsonProvider(File dataFolder) {
@@ -61,6 +60,13 @@ public class GuildJsonProvider implements GuildProvider {
 
     @Override
     public void createContainer(@Nullable String tablePrefix) {
+        if (!this.dataFolder.exists()) {
+            this.dataFolder.mkdir();
+        }
+    }
+
+    @Override
+    public void createContainerFallback(@Nullable String tablePrefix) {
         if (!this.dataFolder.exists()) {
             this.dataFolder.mkdir();
         }

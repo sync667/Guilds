@@ -60,6 +60,10 @@ public class ArenaAdapter {
         provider.createContainer(sqlTablePrefix);
     }
 
+    public void createContainerFallback() throws IOException {
+        provider.createContainerFallback(sqlTablePrefix);
+    }
+
     public boolean arenaExists(@NotNull String id) throws IOException {
         return provider.arenaExists(sqlTablePrefix, id);
     }

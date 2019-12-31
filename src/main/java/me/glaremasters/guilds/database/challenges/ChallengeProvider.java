@@ -41,6 +41,13 @@ public interface ChallengeProvider {
     void createContainer(@Nullable String tablePrefix) throws IOException;
 
     /**
+     * Creates the container using LONGTEXT for older database support
+     * @param tablePrefix the prefix, if any to us
+     * @throws IOException
+     */
+    void createContainerFallback(@org.jetbrains.annotations.Nullable String tablePrefix) throws IOException;
+
+    /**
      * Gets all challenges from the database
      * @param tablePrefix the prefix, if any, to use
      * @return a list of challenges

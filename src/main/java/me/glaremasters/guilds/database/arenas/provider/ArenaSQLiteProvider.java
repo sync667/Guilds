@@ -49,6 +49,16 @@ public interface ArenaSQLiteProvider extends ArenaProvider {
     void createContainer(@Define("prefix") @NotNull String prefix);
 
     @Override
+    @SqlUpdate(
+            "CREATE TABLE IF NOT EXISTS <prefix>arena (\n" +
+                    "  `id` VARCHAR(36) NOT NULL,\n" +
+                    "  `data` LONGTEXT NOT NULL,\n" +
+                    "  PRIMARY KEY (`id`),\n" +
+                    "  UNIQUE (`id`));"
+    )
+    void createContainerFallback(@Define("prefix") @NotNull String prefix);
+
+    @Override
     @SqlQuery("SELECT EXISTS(SELECT 1 FROM <prefix>arena WHERE id = :id)")
     boolean arenaExists(@Define("prefix") @NotNull String prefix, @Bind("id") @NotNull String id) throws IOException;
 

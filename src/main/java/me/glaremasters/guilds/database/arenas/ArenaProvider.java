@@ -45,6 +45,13 @@ public interface ArenaProvider {
     void createContainer(@Nullable String tablePrefix) throws IOException;
 
     /**
+     * Creates the container using LONGTEXT for older database support
+     * @param tablePrefix the prefix, if any to us
+     * @throws IOException
+     */
+    void createContainerFallback(@Nullable String tablePrefix) throws IOException;
+
+    /**
      * Checks whether or not an arena with the specified id exists
      * @param id the arena id
      * @return true or false

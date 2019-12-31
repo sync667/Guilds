@@ -30,8 +30,8 @@ import me.glaremasters.guilds.database.challenges.ChallengeProvider;
 import me.glaremasters.guilds.guild.GuildChallenge;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -55,6 +55,13 @@ public class ChallengeJsonProvider implements ChallengeProvider {
 
     @Override
     public void createContainer(@Nullable String tablePrefix) throws IOException {
+        if (!this.dataFolder.exists()) {
+            this.dataFolder.mkdir();
+        }
+    }
+
+    @Override
+    public void createContainerFallback(@Nullable String tablePrefix) {
         if (!this.dataFolder.exists()) {
             this.dataFolder.mkdir();
         }

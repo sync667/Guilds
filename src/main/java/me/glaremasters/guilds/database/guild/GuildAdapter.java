@@ -61,6 +61,10 @@ public class GuildAdapter {
         provider.createContainer(sqlTablePrefix);
     }
 
+    public void createContainerFallback() throws IOException {
+        provider.createContainerFallback(sqlTablePrefix);
+    }
+
     public boolean guildExists(@NotNull String id) throws IOException {
         return provider.guildExists(sqlTablePrefix, id);
     }

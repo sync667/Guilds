@@ -62,6 +62,13 @@ public class ArenaJsonProvider implements ArenaProvider {
     }
 
     @Override
+    public void createContainerFallback(@Nullable String tablePrefix) throws IOException {
+        if (!this.dataFolder.exists()) {
+            this.dataFolder.mkdir();
+        }
+    }
+
+    @Override
     public boolean arenaExists(@Nullable String tablePrefix, @NotNull String id) throws IOException {
         return Arrays.stream(Objects.requireNonNull(dataFolder.listFiles()))
                 .map(f -> FilenameUtils.removeExtension(f.getName()))
