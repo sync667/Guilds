@@ -286,7 +286,7 @@ public class BuffGUI {
             executeGuildCommands(guildCheck, guildCommands, guild);
         });
         ItemMeta meta = buffItem.getItem().getItemMeta();
-        meta.setDisplayName(ACFBukkitUtil.color(name));
+        meta.setDisplayName(StringUtils.color(name));
         meta.setLore(lore.stream().map(ACFBukkitUtil::color).collect(Collectors.toList()));
         buffItem.getItem().setItemMeta(meta);
         if (check)

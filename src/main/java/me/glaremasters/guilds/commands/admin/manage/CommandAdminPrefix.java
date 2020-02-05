@@ -24,7 +24,6 @@
 
 package me.glaremasters.guilds.commands.admin.manage;
 
-import co.aikar.commands.ACFBukkitUtil;
 import co.aikar.commands.ACFUtil;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -70,7 +69,7 @@ public class CommandAdminPrefix extends BaseCommand {
             ACFUtil.sneaky(new ExpectationNotMet(Messages.ERROR__GUILD_NO_EXIST));
         }
 
-        guild.setPrefix(ACFBukkitUtil.color(prefix));
+        guild.setPrefix(StringUtils.color(prefix));
 
         getCurrentCommandIssuer().sendInfo(Messages.PREFIX__SUCCESSFUL,
                 "{prefix}", prefix);

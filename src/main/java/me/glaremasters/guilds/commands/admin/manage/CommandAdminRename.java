@@ -24,7 +24,6 @@
 
 package me.glaremasters.guilds.commands.admin.manage;
 
-import co.aikar.commands.ACFBukkitUtil;
 import co.aikar.commands.ACFUtil;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -71,7 +70,7 @@ public class CommandAdminRename extends BaseCommand {
             ACFUtil.sneaky(new ExpectationNotMet(Messages.ERROR__GUILD_NO_EXIST));
         }
 
-        guild.setName(ACFBukkitUtil.color(newName));
+        guild.setName(StringUtils.color(newName));
         getCurrentCommandIssuer().sendInfo(Messages.RENAME__SUCCESSFUL,
                 "{name}", newName);
 

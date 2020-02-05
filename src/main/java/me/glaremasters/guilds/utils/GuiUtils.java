@@ -43,7 +43,7 @@ public class GuiUtils {
             item = XMaterial.GLASS_PANE.parseItem();
         }
         ItemBuilder builder = new ItemBuilder(item);
-        builder.setName(ACFBukkitUtil.color(name));
+        builder.setName(StringUtils.color(name));
         if (!lore.isEmpty()) {
             builder.setLore(lore.stream().map(ACFBukkitUtil::color).collect(Collectors.toList()));
         }

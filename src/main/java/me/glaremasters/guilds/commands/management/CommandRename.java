@@ -25,7 +25,6 @@
 package me.glaremasters.guilds.commands.management;
 
 import ch.jalu.configme.SettingsManager;
-import co.aikar.commands.ACFBukkitUtil;
 import co.aikar.commands.ACFUtil;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -96,7 +95,7 @@ public class CommandRename extends BaseCommand {
             return;
         }
 
-        guild.setName(ACFBukkitUtil.color(name));
+        guild.setName(StringUtils.color(name));
 
          if (ClaimUtils.isEnable(settingsManager)) {
              WorldGuardWrapper wrapper = WorldGuardWrapper.getInstance();

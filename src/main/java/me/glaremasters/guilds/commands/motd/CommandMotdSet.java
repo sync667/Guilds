@@ -25,7 +25,6 @@
 package me.glaremasters.guilds.commands.motd;
 
 import ch.jalu.configme.SettingsManager;
-import co.aikar.commands.ACFBukkitUtil;
 import co.aikar.commands.ACFUtil;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -70,7 +69,7 @@ public class CommandMotdSet extends BaseCommand {
             ACFUtil.sneaky(new InvalidPermissionException());
         }
         // Set the motd
-        guild.setMotd(ACFBukkitUtil.color(motd));
+        guild.setMotd(StringUtils.color(motd));
         // Tell the user they set the motd
         getCurrentCommandIssuer().sendInfo(Messages.MOTD__SUCCESS, "{motd}", guild.getMotd());
     }

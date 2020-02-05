@@ -25,7 +25,6 @@
 package me.glaremasters.guilds.commands.management;
 
 import ch.jalu.configme.SettingsManager;
-import co.aikar.commands.ACFBukkitUtil;
 import co.aikar.commands.ACFUtil;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -146,13 +145,13 @@ public class CommandCreate extends BaseCommand {
 
                 Guild.GuildBuilder gb = Guild.builder();
                 gb.id(UUID.randomUUID());
-                gb.name(ACFBukkitUtil.color(name));
+                gb.name(StringUtils.color(name));
                 if (!settingsManager.getProperty(GuildSettings.DISABLE_PREFIX)) {
                     if (prefix == null) {
-                        gb.prefix(ACFBukkitUtil.color(name));
+                        gb.prefix(StringUtils.color(name));
                     }
                     else {
-                        gb.prefix(ACFBukkitUtil.color(prefix));
+                        gb.prefix(StringUtils.color(prefix));
                     }
                 } else {
                     gb.prefix("");

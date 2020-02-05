@@ -24,6 +24,7 @@
 
 package me.glaremasters.guilds.utils;
 
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.BufferedReader;
@@ -58,6 +59,10 @@ public final class StringUtils {
             announcement = "Could not fetch announcements!";
         }
         return announcement;
+    }
+
+    public static String color(String input) {
+        return ChatColor.translateAlternateColorCodes('&', input);
     }
 
     /**
