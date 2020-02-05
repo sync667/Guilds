@@ -127,14 +127,11 @@ public class InfoMembersGUI {
             // Create a variable for the status
             String status = settingsManager.getProperty(m.isOnline() ? GuildInfoMemberSettings.MEMBERS_ONLINE : GuildInfoMemberSettings.MEMBERS_OFFLINE);
 
-            // Create a variable for the role
-            GuildRole role = guildHandler.getGuildRole(m.getRole().getLevel());
-
             pane.addItem(new GuiItem(GuiUtils.createItem(settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_MATERIAL),
                     settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_NAME).replace("{player}", m.getName()),
                     settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_LORE).stream().map(l ->
                             l.replace("{name}", m.getName())
-                                    .replace("{role}", role.getName())
+                                    .replace("{role}", guild.getTier().getName())
                                     .replace("{join}", sdf.format(new Date(m.getJoinDate())))
                                     .replace("{login}", sdf.format(new Date(m.getLastLogin())))
                                     .replace("{status}", status)).collect(Collectors.toList())),
