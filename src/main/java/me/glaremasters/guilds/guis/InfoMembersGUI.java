@@ -125,27 +125,15 @@ public class InfoMembersGUI {
         members.forEach(m -> {
 
             // Create a variable for the status
-            String status;
+            String status = settingsManager.getProperty(m.isOnline() ? GuildInfoMemberSettings.MEMBERS_ONLINE : GuildInfoMemberSettings.MEMBERS_OFFLINE);
 
             // Create a variable for the role
             GuildRole role = guildHandler.getGuildRole(m.getRole().getLevel());
 
-            // Create a variable for the name of the player
-            String name = Bukkit.getOfflinePlayer(m.getUuid()).getName();
-
-            // Check if they are online
-            if (m.isOnline()) {
-                // Use the online string
-                status = settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_ONLINE);
-            } else {
-                // Use the offline string
-                status = settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_OFFLINE);
-            }
-
             pane.addItem(new GuiItem(GuiUtils.createItem(settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_MATERIAL),
-                    settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_NAME).replace("{player}", name),
+                    settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_NAME).replace("{player}", m.getName()),
                     settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_LORE).stream().map(l ->
-                            l.replace("{name}", name)
+                            l.replace("{name}", m.getName())
                                     .replace("{role}", role.getName())
                                     .replace("{join}", sdf.format(new Date(m.getJoinDate())))
                                     .replace("{login}", sdf.format(new Date(m.getLastLogin())))
