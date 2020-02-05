@@ -25,7 +25,6 @@
 package me.glaremasters.guilds.guis;
 
 import ch.jalu.configme.SettingsManager;
-import co.aikar.commands.ACFBukkitUtil;
 import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
@@ -37,13 +36,17 @@ import me.glaremasters.guilds.guild.Guild;
 import me.glaremasters.guilds.guild.GuildHandler;
 import me.glaremasters.guilds.utils.GuiBuilder;
 import me.glaremasters.guilds.utils.GuiUtils;
+import me.glaremasters.guilds.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Created by Glare
@@ -56,12 +59,32 @@ public class ListGUI {
     private SettingsManager settingsManager;
     private GuildHandler guildHandler;
     private List<GuiItem> items;
+    private Map<String, Function<Guild, Object>> replacements = new HashMap<>();
 
     public ListGUI(Guilds guilds, SettingsManager settingsManager, GuildHandler guildHandler) {
         this.guilds = guilds;
         this.settingsManager = settingsManager;
         this.guildHandler = guildHandler;
         this.items = new ArrayList<>();
+        loadReplacements();
+    }
+
+    private void loadReplacements() {
+        SimpleDateFormat sdf = new SimpleDateFormat(settingsManager.getProperty(GuildListSettings.GUI_TIME_FORMAT));
+
+        replacements.put("{guild}", Guild::getName);
+        replacements.put("{player}", (guild) -> Bukkit.getOfflinePlayer(guild.getGuildMaster().getUuid()).getName());
+        replacements.put("{guild-name}", Guild::getName);
+        replacements.put("{guild-prefix}", Guild::getPrefix);
+        replacements.put("{guild-master}", (guild) -> Bukkit.getOfflinePlayer(guild.getGuildMaster().getUuid()).getName());
+        replacements.put("{guild-tier}", (guild) -> guild.getTier().getLevel());
+        replacements.put("{guild-balance}", Guild::getBalance);
+        replacements.put("{guild-member-count}", Guild::getSize);
+        replacements.put("{guild-challenge-win}", (guild) -> guild.getGuildScore().getWins());
+        replacements.put("{guild-challenge-loses", (guild) -> guild.getGuildScore().getLoses());
+        replacements.put("{guild-tier-name}", (guild) -> guild.getTier().getName());
+        replacements.put("{guild-status}", (guild) -> settingsManager.getProperty(guild.isPrivate() ? GuildInfoSettings.STATUS_PRIVATE  : GuildInfoSettings.STATUS_PUBLIC));
+        replacements.put("{creation}", (guild) -> sdf.format(guild.getCreationDate()));
     }
 
     public Gui getListGUI() {
@@ -151,12 +174,13 @@ public class ListGUI {
      * @param guild the guild of the pane
      */
     private void setListItem(Guild guild) {
+
         GuiItem listItem = new GuiItem(guild.getSkull(), event -> {
             guilds.getGuiHandler().getInfoMembersGUI().getInfoMembersGUI(guild).show(event.getWhoClicked());
             event.setCancelled(true);
         });
         ItemMeta meta = listItem.getItem().getItemMeta();
-        meta.setDisplayName(ACFBukkitUtil.color(settingsManager.getProperty(GuildListSettings.GUILD_LIST_ITEM_NAME).replace("{player}", Bukkit.getOfflinePlayer(guild.getGuildMaster().getUuid()).getName()).replace("{guild}", guild.getName())));
+        meta.setDisplayName(StringUtils.color(settingsManager.getProperty(GuildListSettings.GUILD_LIST_ITEM_NAME).replace("{player}", Bukkit.getOfflinePlayer(guild.getGuildMaster().getUuid()).getName()).replace("{guild}", guild.getName())));
         meta.setLore(updatedLore(guild, settingsManager.getProperty(GuildListSettings.GUILD_LIST_HEAD_LORE)));
         listItem.getItem().setItemMeta(meta);
         items.add(listItem);
@@ -170,27 +194,8 @@ public class ListGUI {
      * @return updated lore
      */
     private List<String> updatedLore(Guild guild, List<String> lore) {
-        SimpleDateFormat sdf = new SimpleDateFormat(settingsManager.getProperty(GuildListSettings.GUI_TIME_FORMAT));
-        boolean status = guild.isPrivate();
-        String statusString;
-        if (status) {
-            statusString = settingsManager.getProperty(GuildInfoSettings.STATUS_PRIVATE);
-        } else {
-            statusString = settingsManager.getProperty(GuildInfoSettings.STATUS_PUBLIC);
-        }
-        List<String> updated = new ArrayList<>();
-        lore.forEach(line -> updated.add(ACFBukkitUtil.color(line
-                .replace("{guild-name}", guild.getName())
-                .replace("{guild-prefix}", guild.getPrefix())
-                .replace("{guild-master}", Bukkit.getOfflinePlayer(guild.getGuildMaster().getUuid()).getName())
-                .replace("{guild-status}", statusString)
-                .replace("{guild-tier}", String.valueOf(guild.getTier().getLevel()))
-                .replace("{guild-balance}", String.valueOf(guild.getBalance()))
-                .replace("{guild-member-count}", String.valueOf(guild.getSize()))
-                .replace("{guild-challenge-wins}", String.valueOf(guild.getGuildScore().getWins()))
-                .replace("{guild-challenge-loses}", String.valueOf(guild.getGuildScore().getLoses()))
-                .replace("{creation}", sdf.format(guild.getCreationDate()))
-                .replace("{guild-tier-name}", guildHandler.getGuildTier(guild.getTier().getLevel()).getName()))));
+        final List<String> updated = new ArrayList<>(lore);
+        replacements.forEach((k, v) -> updated.replaceAll(s -> s.replace("{" + k + "}", String.valueOf(v.apply(guild)))));
         return updated;
     }
 
