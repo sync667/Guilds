@@ -48,9 +48,9 @@ import java.util.stream.Collectors;
  */
 public class VaultBlacklistListener implements Listener {
 
-    private Guilds guilds;
-    private GuildHandler guildHandler;
-    private SettingsManager settingsManager;
+    private final Guilds guilds;
+    private final GuildHandler guildHandler;
+    private final SettingsManager settingsManager;
 
     public VaultBlacklistListener(Guilds guilds, GuildHandler guildHandler, SettingsManager settingsManager) {
         this.guilds = guilds;
@@ -67,24 +67,28 @@ public class VaultBlacklistListener implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         if (event.getPlayer() instanceof Player) {
             Player player = (Player) event.getPlayer();
-            guildHandler.getOpenedVault().remove(player);
+            guildHandler.getOpened().remove(player);
         }
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player) {
-            Player player = (Player) event.getWhoClicked();
-            Guild guild = guildHandler.getGuild(player);
-            if (guild != null) {
-                if (guildHandler.getOpenedVault().contains(player)) {
-                    if (event.getClickedInventory() == null) {
-                        guilds.getGuiHandler().getVaultGUI().getVaultGUI(guild, player, guilds.getCommandManager()).show(event.getWhoClicked());
-                        guildHandler.getOpenedVault().remove(player);
-                    }
-                }
-            }
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
         }
+        Player player = (Player) event.getWhoClicked();
+        Guild guild = guildHandler.getGuild(player);
+        if (guild == null) {
+            return;
+        }
+        if (!guildHandler.getOpened().contains(player)) {
+            return;
+        }
+        if (event.getClickedInventory() != null) {
+            return;
+        }
+        guilds.getGuiHandler().getVaults().get(guild, player).open(event.getWhoClicked());
+        guildHandler.getOpened().remove(player);
     }
 
     /**
@@ -99,7 +103,7 @@ public class VaultBlacklistListener implements Listener {
         Player player = (Player) event.getWhoClicked();
 
         // check if they are in the list of open vaults
-        if (!guildHandler.getOpenedVault().contains(player))
+        if (!guildHandler.getOpened().contains(player))
             return;
 
         // get the item clicked
