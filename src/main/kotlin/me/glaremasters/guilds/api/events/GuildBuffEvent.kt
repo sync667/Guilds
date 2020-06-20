@@ -21,15 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package me.glaremasters.guilds.api.events
 
 import me.glaremasters.guilds.api.events.base.GuildEvent
+import me.glaremasters.guilds.conf.objects.GuildBuff
 import me.glaremasters.guilds.guild.Guild
 import org.bukkit.entity.Player
 
-class GuildRemoveEvent(player: Player, guild: Guild, val cause: Cause) : GuildEvent(player, guild) {
-
-    enum class Cause {
-        MASTER_LEFT, PLAYER_DELETED, ADMIN_DELETED
-    }
-}
+class GuildBuffEvent(player: Player, guild: Guild, var buff: GuildBuff) : GuildEvent(player, guild)

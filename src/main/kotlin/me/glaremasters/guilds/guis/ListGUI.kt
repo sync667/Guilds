@@ -25,6 +25,7 @@
 package me.glaremasters.guilds.guis
 
 import ch.jalu.configme.SettingsManager
+import java.text.SimpleDateFormat
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.configuration.sections.GuildInfoSettings
 import me.glaremasters.guilds.configuration.sections.GuildListSettings
@@ -32,11 +33,11 @@ import me.glaremasters.guilds.exte.addBottom
 import me.glaremasters.guilds.guild.Guild
 import me.glaremasters.guilds.guild.GuildHandler
 import me.glaremasters.guilds.guild.GuildSkull
+import me.glaremasters.guilds.utils.EconomyUtils
 import me.glaremasters.guilds.utils.GuiUtils
 import me.glaremasters.guilds.utils.StringUtils
 import me.mattstudios.mfgui.gui.guis.GuiItem
 import me.mattstudios.mfgui.gui.guis.PaginatedGui
-import java.text.SimpleDateFormat
 
 class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsManager, private val guildHandler: GuildHandler) {
     private val items: MutableList<GuiItem>
@@ -62,7 +63,6 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
         next.setAction {
             gui.nextPage()
         }
-
 
         val back = GuiItem(GuiUtils.createItem(settingsManager.getProperty(GuildListSettings.GUILD_LIST_PREVIOUS_PAGE_ITEM), settingsManager.getProperty(GuildListSettings.GUILD_LIST_PREVIOUS_PAGE_ITEM_NAME), emptyList()))
         back.setAction {
@@ -128,7 +128,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
      * Update lore with replacements
      *
      * @param guild the guild being edited
-     * @param lore  the lore to change
+     * @param lore the lore to change
      * @return updated lore
      */
     private fun updatedLore(guild: Guild, lore: List<String>): List<String> {
@@ -147,7 +147,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
                     .replace("{guild-master}", guild.guildMaster.asOfflinePlayer.name.toString())
                     .replace("{guild-status}", status)
                     .replace("{guild-tier}", tier)
-                    .replace("{guild-balance}", guild.balance.toString())
+                    .replace("{guild-balance}", EconomyUtils.format(guild.balance))
                     .replace("{guild-member-count}", guild.size.toString())
                     .replace("{guild-challenge-wins}", guild.guildScore.wins.toString())
                     .replace("{guild-challenge-loses}", guild.guildScore.loses.toString())

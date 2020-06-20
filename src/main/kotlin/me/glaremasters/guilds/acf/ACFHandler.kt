@@ -28,6 +28,7 @@ import ch.jalu.configme.SettingsManager
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
+import java.util.Locale
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.actions.ActionHandler
 import me.glaremasters.guilds.arena.Arena
@@ -46,7 +47,6 @@ import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.util.Locale
 
 class ACFHandler(private val plugin: Guilds, private val commandManager: PaperCommandManager) {
     val languages = mutableListOf<String>()
@@ -67,12 +67,11 @@ class ACFHandler(private val plugin: Guilds, private val commandManager: PaperCo
         loadCommands()
     }
 
-    private fun loadLang() {
-        plugin.dataFolder.resolve("languages").listFiles()?.filter()
-        {
+    fun loadLang() {
+        languages.clear()
+        plugin.dataFolder.resolve("languages").listFiles()?.filter {
             it.extension.equals("yml", true)
-        }?.forEach()
-        {
+        }?.forEach {
             val locale = Locale.forLanguageTag(it.nameWithoutExtension)
 
             commandManager.addSupportedLanguage(locale)
@@ -180,7 +179,6 @@ class ACFHandler(private val plugin: Guilds, private val commandManager: PaperCo
             (1 until list.size).map(Any::toString)
         }
     }
-
 
     private fun loadCommands() {
         ZISScanner().getClasses(Guilds::class.java, "me.glaremasters.guilds.commands").asSequence()

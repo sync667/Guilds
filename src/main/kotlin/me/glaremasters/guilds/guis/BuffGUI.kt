@@ -27,8 +27,11 @@ package me.glaremasters.guilds.guis
 import ch.jalu.configme.SettingsManager
 import co.aikar.commands.PaperCommandManager
 import com.cryptomorin.xseries.XPotion
+import java.util.concurrent.TimeUnit
 import me.glaremasters.guilds.Guilds
+import me.glaremasters.guilds.api.events.GuildBuffEvent
 import me.glaremasters.guilds.conf.GuildBuffSettings
+import me.glaremasters.guilds.conf.objects.GuildBuff
 import me.glaremasters.guilds.cooldowns.Cooldown
 import me.glaremasters.guilds.cooldowns.CooldownHandler
 import me.glaremasters.guilds.exte.addBottom
@@ -43,7 +46,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import java.util.concurrent.TimeUnit
 
 class BuffGUI(private val guilds: Guilds, private val buffConfig: SettingsManager, private val cooldownHandler: CooldownHandler) {
 
@@ -70,7 +72,6 @@ class BuffGUI(private val guilds: Guilds, private val buffConfig: SettingsManage
             gui.nextPage()
         }
 
-
         val back = GuiItem(GuiUtils.createItem(nav.previous.material, nav.previous.name, emptyList()))
         back.setAction {
             gui.prevPage()
@@ -89,13 +90,20 @@ class BuffGUI(private val guilds: Guilds, private val buffConfig: SettingsManage
             val cost = buff.price
             val guiItem = GuiItem(item)
             guiItem.setAction { event ->
+                val buffEvent = GuildBuffEvent(player, guild, buff)
+                Bukkit.getPluginManager().callEvent(buffEvent)
+
+                if (buffEvent.isCancelled) {
+                    return@setAction
+                }
+
                 event.isCancelled = true
 
                 if (!access) {
                     manager.getCommandIssuer(player).sendInfo(Messages.ERROR__BUFF_NO_PERMISSION)
                     return@setAction
                 }
-                
+
                 if (cooldownHandler.hasCooldown(cooldownName, guild.id)) {
                     manager.getCommandIssuer(player).sendInfo(Messages.ERROR__BUFF_COOLDOWN, "{amount}", cooldownHandler.getRemaining(cooldownName, guild.id).toString())
                     return@setAction
@@ -112,8 +120,8 @@ class BuffGUI(private val guilds: Guilds, private val buffConfig: SettingsManage
                     guild.addPotion(effect)
                 }
                 cooldownHandler.addCooldown(guild, cooldownName, buffConfig.getProperty(GuildBuffSettings.COOLDOWN), TimeUnit.SECONDS)
-                runCommands(buff.clicker.enabled, buff.clicker.commands, listOf(player))
-                runCommands(buff.guild.enabled, buff.guild.commands, guild.onlineAsPlayers)
+                runCommands(buff.clicker.enabled, buff.clicker.commands, listOf(player), player, buff)
+                runCommands(buff.guild.enabled, buff.guild.commands, guild.onlineAsPlayers, player, buff)
             }
             gui.addItem(guiItem)
         }
@@ -131,13 +139,13 @@ class BuffGUI(private val guilds: Guilds, private val buffConfig: SettingsManage
         return potions
     }
 
-    private fun runCommands(run: Boolean, commands: List<String>, players: List<Player>) {
+    private fun runCommands(run: Boolean, commands: List<String>, players: List<Player>, buyer: Player, buff: GuildBuff) {
         if (!run) {
             return
         }
         players.forEach { player ->
             commands.forEach {
-                val update = it.replace("{player}", player.name)
+                val update = it.replace("{player}", player.name).replace("{buyer}", buyer.name).replace("{buff_name}", buff.unlocked.name)
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), update)
             }
         }

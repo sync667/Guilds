@@ -35,6 +35,8 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Flags
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
+import java.util.stream.Collectors
+import java.util.stream.Stream
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.arena.ArenaHandler
 import me.glaremasters.guilds.challenges.ChallengeHandler
@@ -47,8 +49,6 @@ import me.glaremasters.guilds.tasks.GuildWarChallengeCheckTask
 import me.glaremasters.guilds.tasks.GuildWarJoinTask
 import me.glaremasters.guilds.utils.Constants
 import org.bukkit.entity.Player
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 @CommandAlias("%guilds")
 internal class CommandWar : BaseCommand() {
@@ -174,11 +174,17 @@ internal class CommandWar : BaseCommand() {
         }
 
         if (challenge.defender == guild) {
+            if (challenge.defendPlayers.contains(player.uniqueId)) {
+                throw ExpectationNotMet(Messages.WAR__ALREADY_JOINED)
+            }
             if (challenge.defendPlayers.size == challenge.maxPlayersPerSide) {
                 throw ExpectationNotMet(Messages.WAR__ALREADY_AT_MAX)
             }
             challenge.defendPlayers.add(player.uniqueId)
         } else {
+            if (challenge.challengePlayers.contains(player.uniqueId)) {
+                throw ExpectationNotMet(Messages.WAR__ALREADY_JOINED)
+            }
             if (challenge.challengePlayers.size == challenge.maxPlayersPerSide) {
                 throw ExpectationNotMet(Messages.WAR__ALREADY_AT_MAX)
             }

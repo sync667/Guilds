@@ -24,6 +24,8 @@
 
 package me.glaremasters.guilds.conf.objects
 
-internal data class BuffSetting(var name: String = "",
-                                var material: String = "",
-                                var lore: List<String> = listOf(""))
+data class BuffSettings(
+    var name: String = "",
+    var material: String = "",
+    var lore: List<String> = listOf("")
+)

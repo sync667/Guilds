@@ -44,6 +44,7 @@ internal class CommandHelp : BaseCommand() {
     @CommandPermission(Constants.BASE_PERM + "help")
     @Description("{@@descriptions.help}")
     fun help(help: CommandHelp) {
+        help.helpEntries.sortBy { it.command }
         help.showHelp()
     }
 }

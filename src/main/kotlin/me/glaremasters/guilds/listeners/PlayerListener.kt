@@ -25,6 +25,9 @@
 package me.glaremasters.guilds.listeners
 
 import ch.jalu.configme.SettingsManager
+import java.io.IOException
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.configuration.sections.GuildSettings
 import me.glaremasters.guilds.configuration.sections.PluginSettings
@@ -41,8 +44,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRespawnEvent
-import java.io.IOException
-import java.util.UUID
 
 class PlayerListener(private val guilds: Guilds, private val settingsManager: SettingsManager, private val guildHandler: GuildHandler, private val permission: Permission) : Listener {
     private val informed = mutableSetOf<UUID>()
@@ -58,13 +59,13 @@ class PlayerListener(private val guilds: Guilds, private val settingsManager: Se
         if (informed.contains(player.uniqueId)) {
             return
         }
-        Bukkit.getScheduler().runTaskLater(guilds, Runnable {
+        Guilds.newChain<Any>().delay(5, TimeUnit.SECONDS).async {
             try {
                 JSONMessage.create(StringUtils.color("&f[&aGuilds&f]&r Announcements (Hover over me for more information)")).tooltip(StringUtils.getAnnouncements(guilds)).openURL(guilds.description.website).send(player)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-        }, 100L)
+        }.execute()
         informed.add(player.uniqueId)
     }
 

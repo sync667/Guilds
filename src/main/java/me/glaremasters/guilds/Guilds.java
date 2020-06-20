@@ -242,7 +242,7 @@ public final class Guilds extends JavaPlugin {
         // Load the optional listeners
         optionalListeners();
 
-        api = new GuildsAPI(getGuildHandler());
+        api = new GuildsAPI(guildHandler, cooldownHandler);
 
         LoggingUtils.info("Ready to go! That only took " + (System.currentTimeMillis() - startingTime) + "ms");
         getServer().getScheduler().scheduleAsyncRepeatingTask(this, () -> {
@@ -289,8 +289,8 @@ public final class Guilds extends JavaPlugin {
     private void downloadOptionalDependencies() {
         BukkitLibraryManager loader = new BukkitLibraryManager(this);
         Libraries libraries = new Libraries();
-        loader.addRepository("https://repo.glaremasters.me/repository/public/");
         loader.addMavenCentral();
+        loader.addRepository("https://repo.glaremasters.me/repository/public/");
         if (!settingsHandler.getMainConf().getProperty(StorageSettings.STORAGE_TYPE).toLowerCase().equals("json")) {
             try {
                 libraries.loadSQL(loader);
